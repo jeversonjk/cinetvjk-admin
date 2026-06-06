@@ -1,5 +1,4 @@
-// /api/devices/[id].js — DELETE e PATCH por MAC (CommonJS + Supabase)
-// O frontend chama /api/devices/AA%3ABB%3ACC%3ADD%3AEE%3AFF (MAC URL-encoded)
+// /api/devices/[id].js — GET/PATCH/DELETE por MAC (CommonJS + Supabase)
 const { createClient } = require("@supabase/supabase-js");
 
 const SUPABASE_URL = "https://ohjpkvrmbdcqnlcuiwxf.supabase.co";
@@ -20,9 +19,8 @@ module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  // Decodificar o MAC da URL (pode vir como AA%3ABB%3ACC... ou AA:BB:CC...)
-  const rawId = req.query.id || "";
-  const mac = decodeURIComponent(rawId).toUpperCase();
+  // Decodificar MAC da URL (ex: BE%3A01%3AA0... → BE:01:A0...)
+  const mac = decodeURIComponent(req.query.id || "").toUpperCase();
 
   try {
     if (req.method === "GET") {
@@ -39,11 +37,13 @@ module.exports = async function handler(req, res) {
     }
 
     if (req.method === "PATCH") {
-      const { name, m3uUrl, isActive } = req.body || {};
+      const { name, m3uUrl, isActive, lastSeenAt, nowWatching } = req.body || {};
       const updates = { updated_at: new Date().toISOString() };
-      if (name !== undefined) updates.name = name;
-      if (m3uUrl !== undefined) updates.m3u_url = m3uUrl;
-      if (isActive !== undefined) updates.is_active = isActive;
+      if (name !== undefined)        updates.name = name;
+      if (m3uUrl !== undefined)      updates.m3u_url = m3uUrl;
+      if (isActive !== undefined)    updates.is_active = isActive;
+      if (lastSeenAt !== undefined)  updates.last_seen_at = lastSeenAt;
+      if (nowWatching !== undefined) updates.now_watching = nowWatching;
 
       const { data, error } = await supabase
         .from("devices").update(updates).eq("mac", mac).select().single();
