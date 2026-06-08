@@ -15,3 +15,4 @@ module.exports = function handler(req, res) {
 
   const token = Buffer.from("admin:" + Date.now() + ":cinetv").toString("base64");
   return res.status(200).json({ token });
+};
