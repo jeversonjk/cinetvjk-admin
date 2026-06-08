@@ -5,19 +5,17 @@
   "framework": null,
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://ohjpkvrmbdcqnlcuiwxf.supabase.co/functions/v1/admin-api/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://ohjpkvrmbdcqnlcuiwxf.supabase.co/functions/v1/admin-api/api/:path*"
     },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" }
       ]
     }
   ]
