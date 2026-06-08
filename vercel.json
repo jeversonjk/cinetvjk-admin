@@ -1,6 +1,6 @@
 {
   "buildCommand": "",
-  "outputDirectory": "dist/public",
+  "outputDirectory": ".",
   "installCommand": "echo skip",
   "framework": null,
   "rewrites": [
