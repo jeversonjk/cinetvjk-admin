@@ -7,9 +7,13 @@ function post(url, body) {
     const u = new URL(url);
     const req = https.request({
       hostname: u.hostname,
-      path: u.pathname,
+      port: 443,
+      path: u.pathname + (u.search || ""),
       method: "POST",
-      headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(data) }
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(data)
+      }
     }, (res) =&gt; {
       let raw = "";
       res.on("data", (c) =&gt; raw += c);
