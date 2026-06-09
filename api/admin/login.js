@@ -11,13 +11,6 @@ function post(url, body) {
       path: u.pathname + (u.search || ""),
       method: "POST",
       headers: {
-        const { password } = req.body || {};
-  const ADMIN_PASS = process.env.ADMIN_PASSWORD || "cinetv2024";
-  const JWT_SECRET = process.env.JWT_SECRET || "cinetv-admin-secret-2024";
-
-  if (!password || password !== ADMIN_PASS) {
-    return res.status(401).json({ error: "Senha inválida" });
-  }
         "Content-Type": "application/json",
         "Content-Length": Buffer.byteLength(data)
       }
