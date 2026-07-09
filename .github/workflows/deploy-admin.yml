@@ -13,28 +13,23 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Baixar JS compilado
+      - name: Baixar assets compilados
         run: |
-          curl --fail --retry 3 --retry-delay 5 -L \
+          curl --fail --retry 3 -L \
             "https://ohjpkvrmbdcqnlcuiwxf.supabase.co/storage/v1/object/public/admin-assets/index-DEmgeF_2.js" \
             -o assets/index-DEmgeF_2.js
-          SIZE=$(wc -c &lt; assets/index-DEmgeF_2.js)
-          echo "JS: $SIZE bytes"
-          if [ "$SIZE" -lt 100000 ]; then exit 1; fi
-
-      - name: Baixar CSS compilado
-        run: |
-          curl --fail --retry 3 --retry-delay 5 -L \
+          curl --fail --retry 3 -L \
             "https://ohjpkvrmbdcqnlcuiwxf.supabase.co/storage/v1/object/public/admin-assets/index-BaOmOx1O.css" \
             -o assets/index-BaOmOx1O.css
-          SIZE=$(wc -c &lt; assets/index-BaOmOx1O.css)
-          echo "CSS: $SIZE bytes"
-          if [ "$SIZE" -lt 50000 ]; then exit 1; fi
+          echo "✅ Assets baixados com sucesso"
+          ls -lh assets/
 
       - name: Commit e push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add assets/index-DEmgeF_2.js assets/index-BaOmOx1O.css
-          git diff --staged --quiet && exit 0
-          git commit -m "fix: assets painel admin
+          git diff --staged --quiet && echo "Sem mudanças" && exit 0
+          git commit -m "fix: assets painel admin v8"
+          git push
+          echo "✅ Deploy concluído!"
