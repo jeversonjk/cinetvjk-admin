@@ -21,20 +21,11 @@ jobs:
 
       - name: Criar index.html correto
         run: |
-          printf '&lt;!doctype html&gt;
-&lt;html lang="pt-BR" class="dark"&gt;
-  &lt;head&gt;
-    &lt;meta charset="UTF-8" /&gt;
-    &lt;title&gt;CineTv Jk - Painel Admin&lt;/title&gt;
-    &lt;link rel="icon" type="image/svg+xml" href="/favicon.svg" /&gt;
-    &lt;script type="module" crossorigin src="/assets/index-CywxPJLM.js"&gt;&lt;/script&gt;
-    &lt;link rel="stylesheet" crossorigin href="/assets/index-DvUw4owq.css"&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    <div id="root"></div>
-  &lt;/body&gt;
-&lt;/html&gt;
-' &gt; index.html
+          python3 -c "
+          html = '&lt;!doctype html&gt;&lt;html lang=\"pt-BR\" class=\"dark\"&gt;&lt;head&gt;&lt;meta charset=\"UTF-8\" /&gt;&lt;title&gt;CineTv Jk - Painel Admin&lt;/title&gt;&lt;script type=\"module\" crossorigin src=\"/assets/index-CywxPJLM.js\"&gt;&lt;/script&gt;&lt;link rel=\"stylesheet\" crossorigin href=\"/assets/index-DvUw4owq.css\"&gt;&lt;/head&gt;&lt;body&gt;<div id="\&quot;root\&quot;"></div>&lt;/body&gt;&lt;/html&gt;'
+          open('index.html', 'w').write(html)
+          print('OK:', open('index.html').read()[:50])
+          "
 
       - name: Commit e push
         run: |
