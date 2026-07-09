@@ -1,0 +1,48 @@
+name: 🚀 Deploy Admin Assets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-assets:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Baixar JS compilado
+        run: |
+          curl --fail --retry 3 --retry-delay 5 -L \
+            "https://ohjpkvrmbdcqnlcuiwxf.supabase.co/storage/v1/object/public/admin-assets/index-DEmgeF_2.js" \
+            -o assets/index-DEmgeF_2.js
+          SIZE=$(wc -c < assets/index-DEmgeF_2.js)
+          echo "JS baixado: $SIZE bytes"
+          if [ "$SIZE" -lt 100000 ]; then
+            echo "ERRO: JS muito pequeno ($SIZE bytes), abortando"
+            exit 1
+          fi
+
+      - name: Baixar CSS compilado
+        run: |
+          curl --fail --retry 3 --retry-delay 5 -L \
+            "https://ohjpkvrmbdcqnlcuiwxf.supabase.co/storage/v1/object/public/admin-assets/index-BaOmOx1O.css" \
+            -o assets/index-BaOmOx1O.css
+          SIZE=$(wc -c < assets/index-BaOmOx1O.css)
+          echo "CSS baixado: $SIZE bytes"
+          if [ "$SIZE" -lt 50000 ]; then
+            echo "ERRO: CSS muito pequeno ($SIZE bytes), abortando"
+            exit 1
+          fi
+
+      - name: Commit e push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/index-DEmgeF_2.js assets/index-BaOmOx1O.css
+          git diff --staged --quiet && echo "Nenhuma mudança" && exit 0
+          git commit -m "fix: atualizar assets do painel admin v8"
+          git push
+          echo "✅ Deploy concluído!"
