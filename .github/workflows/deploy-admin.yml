@@ -1,22 +1,46 @@
 name: 🚀 Deploy Admin Assets
+
 on:
   workflow_dispatch:
+
 jobs:
   update-assets:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Baixar JS
         run: wget -q "https://ohjpkvrmbdcqnlcuiwxf.supabase.co/storage/v1/object/public/admin-assets/index-CywxPJLM.js" -O assets/index-CywxPJLM.js
+
       - name: Baixar CSS
         run: wget -q "https://ohjpkvrmbdcqnlcuiwxf.supabase.co/storage/v1/object/public/admin-assets/index-DvUw4owq.css" -O assets/index-DvUw4owq.css
+
+      - name: Criar index.html correto
+        run: |
+          printf '&lt;!doctype html&gt;
+&lt;html lang="pt-BR" class="dark"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8" /&gt;
+    &lt;title&gt;CineTv Jk - Painel Admin&lt;/title&gt;
+    &lt;link rel="icon" type="image/svg+xml" href="/favicon.svg" /&gt;
+    &lt;script type="module" crossorigin src="/assets/index-CywxPJLM.js"&gt;&lt;/script&gt;
+    &lt;link rel="stylesheet" crossorigin href="/assets/index-DvUw4owq.css"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    <div id="root"></div>
+  &lt;/body&gt;
+&lt;/html&gt;
+' &gt; index.html
+
       - name: Commit e push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/index-CywxPJLM.js assets/index-DvUw4owq.css
+          git add assets/index-CywxPJLM.js assets/index-DvUw4owq.css index.html
           git diff --staged --quiet && exit 0
-          git commit -m "fix: assets painel admin v9 - corrige login"
+          git commit -m "fix: assets e index.html painel admin v9"
           git push
