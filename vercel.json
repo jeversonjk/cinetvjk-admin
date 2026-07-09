@@ -1,22 +1,5 @@
 {
-  "buildCommand": "",
-  "outputDirectory": ".",
-  "installCommand": "echo skip",
-  "framework": null,
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://ohjpkvrmbdcqnlcuiwxf.supabase.co/functions/v1/admin-api/api/:path*?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9oanBrdnJtYmRjcW5sY3Vpd3hmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NTIxMTEsImV4cCI6MjA5NjMyODExMX0._ygJHLEFTCHTAn2U-wxN3-_TsmNMatblDLg4xi7cEE4"
-    },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" }
-      ]
-    }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
