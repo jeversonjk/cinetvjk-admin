@@ -1,26 +1,17 @@
-// /api/admin/login.js — proxy para Edge Function
-// /api/admin/login.js — Vercel Serverless Function
-const crypto = require("crypto");
+const EDGE_URL = 'https://ohjpkvrmbdcqnlcuiwxf.supabase.co/functions/v1/admin-api';
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9oanBrdnJtYmRjcW5sY3Vpd3hmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NTIxMTEsImV4cCI6MjA5NjMyODExMX0._ygJHLEFTCHTAn2U-wxN3-_TsmNMatblDLg4xi7cEE4';
 
-module.exports = function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
-
-  const { password } = req.body || {};
-  const ADMIN_PASS = process.env.ADMIN_PASSWORD || "cinetv2024";
-  const JWT_SECRET = process.env.JWT_SECRET || "cinetv-admin-secret-2024";
-
-  if (!password || password !== ADMIN_PASS) {
-    return res.status(401).json({ error: "Senha inválida" });
-  }
-
-  const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url");
-  const payload = Buffer.from(JSON.stringify({ role: "admin", iat: Date.now() })).toString("base64url");
-  const sig = crypto.createHmac("sha256", JWT_SECRET).update(header + "." + payload).digest("base64url");
-  const token = header + "." + payload + "." + sig;
-
-  return res.status(200).json({ token });
-};
+export default async function handler(req, res) {
+  const slug = req.query.slug || [];
+  const path = '/' + (Array.isArray(slug) ? slug.join('/') : slug);
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${ANON_KEY}`,
+  };
+  if (req.headers['x-admin-token']) headers['x-admin-token'] = req.headers['x-admin-token'];
+  let body;
+  if (req.method !== 'GET') body = JSON.stringify(req.body);
+  const upstream = await fetch(EDGE_URL + path, { method: req.method, headers, body });
+  const data = await upstream.json().catch(() =&gt; ({}));
+  res.status(upstream.status).json(data);
+}
